@@ -1,0 +1,242 @@
+`include "disciplines.vams"
+`include "constants.vams"
+
+module spi_driver_seq(sclk, cs, mosi, rst_n);
+
+    input sclk;
+    output cs, mosi, rst_n;
+    electrical sclk, cs, mosi, rst_n;
+
+    parameter real vhigh = 1.8;
+    parameter real vlow  = 0.0;
+    parameter real v_thresh = 0.9;
+    parameter real tt = 1e-9;
+
+    integer bit_count;
+    integer active;
+
+    real cs_val, mosi_val, rst_val;
+
+    analog begin
+
+        // INIT
+        @(initial_step) begin
+            cs_val = 1;
+            mosi_val = 0;
+            rst_val = 0;
+            bit_count = 0;
+            active = 0;
+        end
+        @(timer(200e-9))   rst_val = 1;
+       // @(timer(22000e-9)) rst_val = 0;
+
+        // ============================
+        // WRITE BURSTS (ADDR 0-4)
+        // ============================
+        @(timer(500e-9))   begin active=1; cs_val=0; bit_count=0; mosi_val=vhigh; end
+        @(timer(2500e-9))  begin active=1; cs_val=0; bit_count=0; mosi_val=vhigh; end
+        @(timer(4500e-9))  begin active=1; cs_val=0; bit_count=0; mosi_val=vhigh; end
+        @(timer(6500e-9))  begin active=1; cs_val=0; bit_count=0; mosi_val=vhigh; end
+        @(timer(8500e-9))  begin active=1; cs_val=0; bit_count=0; mosi_val=vhigh; end
+
+        // ============================
+        // READ BURSTS (ADDR 0-4)
+        // ============================
+        @(timer(11500e-9)) begin active=1; cs_val=0; bit_count=0; mosi_val=vlow; end
+        @(timer(13500e-9)) begin active=1; cs_val=0; bit_count=0; mosi_val=vlow; end
+        @(timer(15500e-9)) begin active=1; cs_val=0; bit_count=0; mosi_val=vlow; end
+        @(timer(17500e-9)) begin active=1; cs_val=0; bit_count=0; mosi_val=vlow; end
+        @(timer(19500e-9)) begin active=1; cs_val=0; bit_count=0; mosi_val=vlow; end
+
+        // ============================
+        // MOSI GENERATION
+        // ============================
+        @(cross(V(sclk) - v_thresh, -1)) begin
+            if (active == 1) begin
+                bit_count = bit_count + 1;
+
+                // ================= WRITE =================
+                if ($abstime < 10500e-9) begin
+                    if ($abstime < 2500e-9) begin
+                        case(bit_count)
+                            1: mosi_val=vlow;
+                            2: mosi_val=vlow;
+                            3: mosi_val=vlow;
+                            4: mosi_val=vlow;
+                            5: mosi_val=vlow;
+                            6: mosi_val=vlow;
+                            7: mosi_val=vlow;
+                            8: mosi_val=vlow;
+                            9: mosi_val=vlow;
+                            10: mosi_val=vlow;
+                            11: mosi_val=vlow;
+                            12: mosi_val=vhigh;
+                            13: mosi_val=vhigh;
+                            14: mosi_val=vhigh;
+                            15: mosi_val=vhigh;
+                            default: mosi_val=vlow;
+                        endcase
+                    end
+                    else if ($abstime < 4500e-9) begin
+                        case(bit_count)
+                            1: mosi_val=vlow;
+                            2: mosi_val=vlow;
+                            3: mosi_val=vlow;
+                            4: mosi_val=vlow;
+                            5: mosi_val=vlow;
+                            6: mosi_val=vlow;
+                            7: mosi_val=vhigh;
+                            8: mosi_val=vhigh;
+                            9: mosi_val=vhigh;
+                            10: mosi_val=vhigh;
+                            11: mosi_val=vhigh;
+                            12: mosi_val=vlow;
+                            13: mosi_val=vlow;
+                            14: mosi_val=vlow;
+                            15: mosi_val=vlow;
+                            default: mosi_val=vlow;
+                        endcase
+                    end
+                    else if ($abstime < 6500e-9) begin
+                        case(bit_count)
+                            1: mosi_val=vlow;
+                            2: mosi_val=vlow;
+                            3: mosi_val=vlow;
+                            4: mosi_val=vlow;
+                            5: mosi_val=vlow;
+                            6: mosi_val=vhigh;
+                            7: mosi_val=vlow;
+                            8: mosi_val=vhigh;
+                            9: mosi_val=vhigh;
+                            10: mosi_val=vlow;
+                            11: mosi_val=vlow;
+                            12: mosi_val=vhigh;
+                            13: mosi_val=vhigh;
+                            14: mosi_val=vlow;
+                            15: mosi_val=vlow;
+                            default: mosi_val=vlow;
+                        endcase
+                    end
+                    else if ($abstime < 8500e-9) begin
+                        case(bit_count)
+                            1: mosi_val=vlow;
+                            2: mosi_val=vlow;
+                            3: mosi_val=vlow;
+                            4: mosi_val=vlow;
+                            5: mosi_val=vlow;
+                            6: mosi_val=vhigh;
+                            7: mosi_val=vhigh;
+                            8: mosi_val=vhigh;
+                            9: mosi_val=vlow;
+                            10: mosi_val=vhigh;
+                            11: mosi_val=vlow;
+                            12: mosi_val=vhigh;
+                            13: mosi_val=vlow;
+                            14: mosi_val=vhigh;
+                            15: mosi_val=vlow;
+                            default: mosi_val=vlow;
+                        endcase
+                    end
+                    else begin
+                        case(bit_count)
+                            1: mosi_val=vlow;
+                            2: mosi_val=vlow;
+                            3: mosi_val=vlow;
+                            4: mosi_val=vlow;
+                            5: mosi_val=vhigh;
+                            6: mosi_val=vlow;
+                            7: mosi_val=vlow;
+                            8: mosi_val=vlow;
+                            9: mosi_val=vlow;
+                            10: mosi_val=vhigh;
+                            11: mosi_val=vhigh;
+                            12: mosi_val=vhigh;
+                            13: mosi_val=vlow;
+                            14: mosi_val=vlow;
+                            15: mosi_val=vlow;
+                            default: mosi_val=vlow;
+                        endcase
+                    end
+                end
+                // ================= READ =================
+                else begin
+                    if ($abstime < 13500e-9) begin
+                        case(bit_count)
+                            1: mosi_val=vlow;
+                            2: mosi_val=vlow;
+                            3: mosi_val=vlow;
+                            4: mosi_val=vlow;
+                            5: mosi_val=vlow;
+                            6: mosi_val=vlow;
+                            7: mosi_val=vlow;
+                            default: mosi_val=vlow;
+                        endcase
+                    end
+                    else if ($abstime < 15500e-9) begin
+                        case(bit_count)
+                            1: mosi_val=vlow;
+                            2: mosi_val=vlow;
+                            3: mosi_val=vlow;
+                            4: mosi_val=vlow;
+                            5: mosi_val=vlow;
+                            6: mosi_val=vlow;
+                            7: mosi_val=vhigh;
+                            default: mosi_val=vlow;
+                        endcase
+                    end
+                    else if ($abstime < 17500e-9) begin
+                        case(bit_count)
+                            1: mosi_val=vlow;
+                            2: mosi_val=vlow;
+                            3: mosi_val=vlow;
+                            4: mosi_val=vlow;
+                            5: mosi_val=vlow;
+                            6: mosi_val=vhigh;
+                            7: mosi_val=vlow;
+                            default: mosi_val=vlow;
+                        endcase
+                    end
+                    else if ($abstime < 19500e-9) begin
+                        case(bit_count)
+                            1: mosi_val=vlow;
+                            2: mosi_val=vlow;
+                            3: mosi_val=vlow;
+                            4: mosi_val=vlow;
+                            5: mosi_val=vlow;
+                            6: mosi_val=vhigh;
+                            7: mosi_val=vhigh;
+                            default: mosi_val=vlow;
+                        endcase
+                    end
+                    else begin
+                        case(bit_count)
+                            1: mosi_val=vlow;
+                            2: mosi_val=vlow;
+                            3: mosi_val=vlow;
+                            4: mosi_val=vlow;
+                            5: mosi_val=vhigh;
+                            6: mosi_val=vlow;
+                            7: mosi_val=vlow;
+                            default: mosi_val=vlow;
+                        endcase
+                    end
+                end
+            end
+        end
+
+        // END TRANSACTION
+        @(cross(V(sclk) - v_thresh, +1)) begin
+            if (active==1 && bit_count>=16) begin
+                active=0;
+                cs_val=1;
+                mosi_val=vlow;
+            end
+        end
+
+        // OUTPUTS
+        V(cs)    <+ transition(cs_val ? vhigh : vlow, 0, tt);
+        V(mosi)  <+ transition(mosi_val, 0, tt);
+        V(rst_n) <+ transition(rst_val ? vhigh : vlow, 0, tt);
+
+    end
+endmodule
